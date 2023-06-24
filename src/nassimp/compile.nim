@@ -1,3 +1,54 @@
+#:________________________________________________________________
+#  nassimp  |  Copyright (C) Ivan Mar (sOkam!)  |  BSD-3-Clause  |
+#:________________________________________________________________
+# std dependencies
+import std/os
+import std/cpuinfo
+import std/strformat
+
+
+#_________________________________________________
+# Helpers
+#_____________________________
+# TODO: Switch to execShellCmd when 2.0 devel becomes stable
+proc sh (cmd :string; dir :string= "") :void=
+  ## Executes the given shell command and writes the output to console.
+  ## Same as the nimscript version, but usable at compile time in static blocks.
+  ## Runs the command from `dir` when specified.
+  when defined(windows): {.warning: "running `sh -c` commands on Windows has not been tested".}
+  var command :string
+  if dir != "":  command = &"cd {dir}; " & cmd
+  else:          command = cmd
+  echo gorge(&"sh -c \"{$command}\"")
+#_____________________________
+const thisDir   = currentSourcePath().parentDir()
+const Cdir      = thisDir/"C"
+const assimpDir = Cdir/"lib"
+
+
+#_________________________________________________
+# Build Assimp
+#_____________________________
+# Note: Cannot be a nimble task
+#   assimp should be built with either debug or release, just like Nim code.
+#   Nimble doesn't understand auto-defines, which makes it impossible to designate a nimble task for it.
+#   Usually you would compile C code with {.compile.} pragmas and nim
+#   But this system calls for the default CMake Assimp buildsystem instead.
+#_____________________________
 # https://github.com/assimp/assimp/blob/master/Build.md
 # BUILD_SHARED_LIBS (default ON): Generation of shared libs (dll for windows, so for Linux). Set this to OFF to get a static lib.
+static:
+  when defined(debug):  let mode = "Debug"
+  else:                 let mode = "Release"
+  let cores = cpuinfo.countProcessors()
+  echo &": Compiling Assimp in {mode} mode..."
+  let opts = &"CMakeLists.txt -DCMAKE_BUILD_TYPE={mode}-DASSIMP_BUILD_ASSIMP_TOOLS=OFF -DBUILD_SHARED_LIBS=OFF -DASSIMP_INSTALL=OFF -DASSIMP_BUILD_TESTS=OFF -DASSIMP_WARNINGS_AS_ERRORS=OFF"
+  let cmd  = &"cmake {opts}; cmake --build . -j{cores}"
+  sh cmd, CDir
+
+
+#_________________________________________________
+# Static link to the Assimp.CMake resulting file
+#_____________________________
+{.link: assimpDir/"libassimp.a".}
 

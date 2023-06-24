@@ -1,0 +1,3 @@
+[submodule "src/nassimp/C"]
+	path = src/nassimp/C
+	url = https://github.com/assimp/assimp.git
