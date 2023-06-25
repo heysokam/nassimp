@@ -24,6 +24,7 @@ type String * = object
 type Texel     * = tuple[b, g, r, a: byte]
 type ColorRGB  * = tuple[r, g, b: cfloat]
 type Color     * = tuple[r, g, b, a: cfloat]
+type Vector2   * = tuple[x, y: cfloat]
 type Vector3   * = tuple[x, y, z: cfloat]
 type VectorKey *{.pure.}= object
   time  *:cdouble

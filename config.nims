@@ -1,5 +1,3 @@
-switch("path", "$projectDir/../src")  # add our dependency without installing it
-
 #_____________________
 # General options
 --mm:orc
@@ -39,7 +37,6 @@ elif defined(debug):
 when defined(verbose):
   --listCmd
   --verbosity:3
-  # --verbose   #TODO: how to pass this to nimble without --verbose ? possible?
 else:
   --passC:"-w"
 

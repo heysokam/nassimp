@@ -1,10 +1,6 @@
 #:________________________________________________________________
 #  nassimp  |  Copyright (C) Ivan Mar (sOkam!)  |  BSD-3-Clause  |
 #:________________________________________________________________
-# External dependencies
-import pkg/chroma
-# ndk dependencies
-import nmath
 # nassimp dependencies
 import ../types
 
@@ -31,24 +27,20 @@ iterator iindices*(face :Face) :cint=
   ## Yields all indices of the given face
   for x in 0..<face.indexCount: yield face.indices[x]
 #_____________________________
-iterator ivertices *(m :ptr Mesh) :Vec3=
+iterator ivertices *(m :ptr Mesh) :Vector3=
   let vertices = cast[ptr UncheckedArray[Vector3]](m.vertices)
-  for vert in 0..<m.vertexCount:
-    yield vec3(vertices[vert].x.float32, vertices[vert].y.float32, vertices[vert].z.float32)
+  for vert in 0..<m.vertexCount: yield vertices[vert]
 #________________________________________
-iterator inormals *(m :ptr Mesh) :Vec3=
+iterator inormals *(m :ptr Mesh) :Vector3=
   let normals = cast[ptr UncheckedArray[Vector3]](m.normals)
-  for vert in 0..<m.vertexCount:
-    yield vec3(normals[vert].x.float32, normals[vert].y.float32, normals[vert].z.float32)
+  for vert in 0..<m.vertexCount: yield normals[vert]
 #________________________________________
-iterator iuvs *(m :ptr Mesh) :Vec2=
+iterator iuvs *(m :ptr Mesh) :Vector2=
   let channel = 0  # TODO: Support for more channels if they exist
-  let verts   = cast[ptr UncheckedArray[Vector3]](m.texCoords[channel])
-  for vert in 0..<m.vertexCount:
-    yield vec2(verts[vert].x.float32, verts[vert].y.float32)
+  let uvs     = cast[ptr UncheckedArray[Vector2]](m.texCoords[channel])
+  for vert in 0..<m.vertexCount: yield uvs[vert]
 #________________________________________
-iterator icolors *(m :ptr Mesh) :chroma.Color=
+iterator icolors *(m :ptr Mesh) :ptr Color=
   let colors = m.colors
-  for vert in 0..<m.vertexCount:
-    yield chroma.color(colors[vert].r.float32, colors[vert].g.float32, colors[vert].b.float32, colors[vert].a.float32)
+  for vert in 0..<m.vertexCount: yield colors[vert]
 

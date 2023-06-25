@@ -1,8 +1,6 @@
 #:________________________________________________________________
 #  nassimp  |  Copyright (C) Ivan Mar (sOkam!)  |  BSD-3-Clause  |
 #:________________________________________________________________
-# std dependencies
-import std/os
 # nassimp dependencies
 import ./types
 

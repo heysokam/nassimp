@@ -64,7 +64,16 @@ static:
 #_________________________________________________
 # Static link to the Assimp.CMake resulting file
 #_____________________________
+{.passL: "-lstdc++ -lz -lminizip".}
 {.passC: &"-I{inclDir}".}
 {.passL: &"-L{assimpDir}"}
-{.passL: "-l:libassimp.a -lstdc++ -lz -lminizip".}
+when defined(windows) and defined(debug):
+  {.passL: "-l:libassimpd.lib".}
+elif defined(windows):
+  {.passL: "-l:libassimp.lib".}
+elif defined(unix) and defined(debug):
+  {.passL: "-l:libassimpd.a".}
+elif defined(unix):
+  {.passL: "-l:libassimp.a".}
+else: {.error: &"System {hostOS} not recognized".}
 
