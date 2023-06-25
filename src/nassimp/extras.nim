@@ -3,9 +3,8 @@
 #:________________________________________________________________
 
 # Cable connector to all extras
-import ./extra/core     ; export core
 import ./extra/convert  ; export convert
-import ./extra/iter     ; export iter
+import ./extra/core     ; export core
 import ./extra/material ; export material
 import ./extra/mesh     ; export mesh
 import ./extra/node     ; export node

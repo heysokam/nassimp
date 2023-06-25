@@ -10,9 +10,9 @@ import ./convert
 proc getFile *(scene :ptr Scene; matId :int; typ :TextureType; texId :int= 0) :string=
   var tex :String
   case scene.materials[matId].getTexture(typ, texId.cint, path = tex.addr, nil, nil, nil, nil, nil)
-  of   ReturnCode.OutOfMemory: raise newException(ImportError, "Tried to get Texture.{typ}.{texId} from material {matId}, but Assimp is OutOfMemory.")
-  of   ReturnCode.Failure:     raise newException(ImportError, "Tried to get Texture.{typ}.{texId} from material {matId}, but the operatio failed.")
-  of   ReturnCode.Success:     result = $tex
+  of   ReturnCode.outOfMemory: raise newException(ImportError, "Tried to get Texture.{typ}.{texId} from material {matId}, but Assimp is OutOfMemory.")
+  of   ReturnCode.failure:     raise newException(ImportError, "Tried to get Texture.{typ}.{texId} from material {matId}, but the operatio failed.")
+  of   ReturnCode.success:     result = $tex
 #______________________________
 proc getDiffuse      *(scene :ptr Scene; matId :int; texId :int= 0) :string {.inline.}=  scene.getFile(matId, TextureType.diffuse, texId)
 proc getSpecular     *(scene :ptr Scene; matId :int; texId :int= 0) :string {.inline.}=  scene.getFile(matId, TextureType.specular, texId)

@@ -1,19 +1,24 @@
 #:________________________________________________________________
 #  nassimp  |  Copyright (C) Ivan Mar (sOkam!)  |  BSD-3-Clause  |
 #:________________________________________________________________
+# std dependencies
+import std/os
+# nassimp dependencies
 import ./types
 
 #_________________________________________________
 # Make all functions cdecl and imported from our joint assimp header
 {.push callconv: cdecl.}
-{.push header: currentSourcePath().parentDir()/"assimp.h".}
+# TODO:
+# {.push header: "cimport.h".}
+# {.push header: "scene.h".}
 #_____________________________
 
 
 #_________________________________________________
 # General Purpose
 #_____________________________
-proc getError *() :cstring {.importc: "aiGetErrorString".}
+proc getError *() :cstring {.importc: "aiGetErrorString", header: "cimport.h".}
 
 #_________________________________________________
 # Logging
@@ -21,27 +26,27 @@ proc getError *() :cstring {.importc: "aiGetErrorString".}
 proc logEnableVerbose *(d :bool) :void {.importc: "aiEnableVerboseLogging".}
 proc logGetStream     *(streams :DefaultLogStream; file :cstring) :LogStream {.importc: "aiGetPredefinedLogStream".}
 proc logAttach        *(stream :ptr LogStream) :void {.importc: "aiAttachLogStream".}
-proc logDetach        *(stream :ptr LogStream) :Return {.importc: "aiDetachLogStream".}
+proc logDetach        *(stream :ptr LogStream) :ReturnCode {.importc: "aiDetachLogStream".}
 proc logDetach        *() :void {.importc: "aiDetachAllLogStreams".}
 
 #_________________________________________________
 # Process
 #_____________________________
-proc applyPostProcess *(pScene :ptr Scene; pFlags :cuint) :ptr Scene {.importc: "aiApplyPostProcessing".}
+proc applyPostProcess *(scene :ptr Scene; flags :ProcessFlags) :ptr Scene {.importc: "aiApplyPostProcessing".}
 
 #_________________________________________________
 # Import
 #_____________________________
-proc release    *(scene :ScenePtr) {.importc: "aiReleaseImport".}
-proc importFile *(filename :cstring; flags :cint) :ScenePtr {.importc: "aiImportFile".}
-proc importMem  *(buffer   :cstring; length, flags :uint32; hint :cstring) :ScenePtr {.importc: "aiImportFileFromMemory".}
+proc release    *(scene :ptr Scene) {.importc: "aiReleaseImport", header: "cimport.h".}
+proc importFile *(file :cstring; flags :ProcessFlags) :ptr Scene {.importc: "aiImportFile", header: "cimport.h".}
+proc importMem  *(buffer :cstring; length :cuint; flags :ProcessFlags; hint :cstring) :ptr Scene {.importc: "aiImportFileFromMemory", header: "cimport.h".}
 
 
 #_________________________________________________
 # Properties
 #_____________________________
-proc getTexture*(
-    material : MaterialPtr;
+proc getTexture *(
+    material : ptr Material;
     kind     : TextureType;
     index    : cint;
     path     : ptr String;
@@ -50,32 +55,34 @@ proc getTexture*(
     blend    : ptr cfloat         = nil;
     op       : ptr TextureOp      = nil;
     mapMode  : ptr TextureMapMode = nil;
-    flags    : ptr cint           = nil
+    flags    : ptr cint           = nil;
   ) :ReturnCode {.importc: "aiGetMaterialTexture".}
 #_____________________________
 proc getMaterialColor *(
-    material : MaterialPtr;
+    material : ptr Material;
     name     : cstring;
     typ      : cuint;
     index    : cuint;
-    color    : ptr Color3d
+    color    : ptr ColorRGB;
   ) :ReturnCode {.importc: "aiGetMaterialColor".}
 #_____________________________
 proc getTextureCount *(
-    material : MaterialPtr;
-    kind     : TextureType
+    material : ptr Material;
+    kind     : TextureType;
   ) :uint32 {.importc: "aiGetMaterialTextureCount".}
 #_____________________________
 proc getMaterialFloatArray *(
-    material : MaterialPtr;
+    material : ptr Material;
     key      : cstring;
     typ      : cuint;
-    index    : cuint = 0.cuint;
+    index    : cuint = 0;
     res      : ptr cfloat;
-    max      : ptr cuint = nil
+    max      : ptr cuint = nil;
   ) :ReturnCode {.importc: "aiGetMaterialFloatArray".}
 
 #_____________________________
 {.pop.} # << callconv cdecl
-{.pop.} # << header: "assimp.h"
+# {.pop.} # << header: "assimp.h"
+# {.pop.} # << header: "cimport.h"
+# {.pop.} # << header: "scene.h"
 
