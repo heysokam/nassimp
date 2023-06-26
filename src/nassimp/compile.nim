@@ -25,8 +25,9 @@ proc sh (cmd :string; dir :string= ""; verb = false) :void=
 #_____________________________
 const thisDir   = currentSourcePath().parentDir()
 const Cdir      = thisDir/"C"
-const assimpDir = Cdir/"lib"
-const inclDir   = Cdir/"include"/"assimp"
+const libDir    = Cdir/"lib"
+const inclDir   = Cdir/"include"
+const assimpDir = Cdir/"include"/"assimp"
 
 
 #_________________________________________________
@@ -66,7 +67,8 @@ static:
 #_____________________________
 {.passL: "-lstdc++ -lz -lminizip".}
 {.passC: &"-I{inclDir}".}
-{.passL: &"-L{assimpDir}"}
+{.passC: &"-I{assimpDir}".}
+{.passL: &"-L{libDir}"}
 when defined(windows) and defined(debug):
   {.passL: "-l:libassimpd.lib".}
 elif defined(windows):
@@ -75,5 +77,6 @@ elif defined(unix) and defined(debug):
   {.passL: "-l:libassimpd.a".}
 elif defined(unix):
   {.passL: "-l:libassimp.a".}
-else: {.error: &"System {hostOS} not recognized".}
+else:
+  {.error: &"System {hostOS} not recognized".}
 

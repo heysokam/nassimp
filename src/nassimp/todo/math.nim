@@ -10,9 +10,8 @@ import ../types
 #_________________________________________________
 # Probably will never use. We have vmath :shrug:  |
 #_________________________________________________|
-# Make all functions cdecl and imported from our joint assimp header
-{.push callconv: cdecl.}
-{.push header: currentSourcePath().parentDir()/".."/"assimp.h".}
+{.push cdecl.}
+{.push header: "cimport.h".}
 #_________________________________________________
 # Vector2
 #_____________________________

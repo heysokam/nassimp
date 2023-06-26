@@ -4,19 +4,15 @@
 # nassimp dependencies
 import ./types
 
-#_________________________________________________
-# Make all functions cdecl and imported from our joint assimp header
-{.push callconv: cdecl.}
-# TODO:
-# {.push header: "cimport.h".}
-# {.push header: "scene.h".}
 #_____________________________
-
+# Make all functions cdecl
+{.push cdecl.}
+{.push header: "cimport.h".}
 
 #_________________________________________________
 # General Purpose
 #_____________________________
-proc getError *() :cstring {.importc: "aiGetErrorString", header: "cimport.h".}
+proc getError *() :cstring {.importc: "aiGetErrorString".}
 
 #_________________________________________________
 # Logging
@@ -35,9 +31,9 @@ proc applyPostProcess *(scene :ptr Scene; flags :ProcessFlags) :ptr Scene {.impo
 #_________________________________________________
 # Import
 #_____________________________
-proc release    *(scene :ptr Scene) {.importc: "aiReleaseImport", header: "cimport.h".}
-proc importFile *(file :cstring; flags :ProcessFlags) :ptr Scene {.importc: "aiImportFile", header: "cimport.h".}
-proc importMem  *(buffer :cstring; length :cuint; flags :ProcessFlags; hint :cstring) :ptr Scene {.importc: "aiImportFileFromMemory", header: "cimport.h".}
+proc release    *(scene :ptr Scene) {.importc: "aiReleaseImport".}
+proc importFile *(file :cstring; flags :ProcessFlags) :ptr Scene {.importc: "aiImportFile".}
+proc importMem  *(buffer :cstring; length :cuint; flags :ProcessFlags; hint :cstring) :ptr Scene {.importc: "aiImportFileFromMemory".}
 
 
 #_________________________________________________
@@ -46,14 +42,14 @@ proc importMem  *(buffer :cstring; length :cuint; flags :ProcessFlags; hint :cst
 proc getTexture *(
     material : ptr Material;
     kind     : TextureType;
-    index    : cint;
+    index    : cuint;
     path     : ptr String;
     mapping  : ptr TextureMapping = nil;
-    uvIndex  : ptr cint           = nil;
+    uvIndex  : ptr cuint          = nil;
     blend    : ptr cfloat         = nil;
     op       : ptr TextureOp      = nil;
     mapMode  : ptr TextureMapMode = nil;
-    flags    : ptr cint           = nil;
+    flags    : ptr cuint          = nil;
   ) :ReturnCode {.importc: "aiGetMaterialTexture".}
 #_____________________________
 proc getMaterialColor *(
@@ -80,7 +76,5 @@ proc getMaterialFloatArray *(
 
 #_____________________________
 {.pop.} # << callconv cdecl
-# {.pop.} # << header: "assimp.h"
-# {.pop.} # << header: "cimport.h"
-# {.pop.} # << header: "scene.h"
+{.pop.} # << header: "cimport.h"
 

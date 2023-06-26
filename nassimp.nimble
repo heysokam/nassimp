@@ -10,7 +10,7 @@ import std/strformat
 packageName   = "nassimp"
 version       = "5.2.5.0"  # First three numbers in sync with assimp
 author        = "sOkam"
-description   = "Static Assimp Wrapper for Nim"
+description   = "Assimp for Nim"
 license       = "BSD-3-Clause"
 
 

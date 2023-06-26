@@ -4,7 +4,7 @@
 
 include ./nassimp/compile
 
-import ./nassimp/types  ; export types
+# import ./nassimp/types  ; export types
 import ./nassimp/procs  ; export procs
 import ./nassimp/extras ; export extras
 

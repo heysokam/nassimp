@@ -2,9 +2,6 @@
 #  nassimp  |  Copyright (C) Ivan Mar (sOkam!)  |  BSD-3-Clause  |
 #:________________________________________________________________
 
-#_______________________________________
-# Nim Exceptions
-type ImportError * = object of IOError
 
 
 #_______________________________________
@@ -20,7 +17,7 @@ const MATKEY_SHININESS      * = "$mat.shininess"
 const MaxStringLen = 1024
 type String * = object
   length *:cuint
-  data   *:array[0..MaxStringLen-1, char]
+  data   *:array[0..MaxStringLen-1, cchar]
 type Texel     * = tuple[b, g, r, a: byte]
 type ColorRGB  * = tuple[r, g, b: cfloat]
 type Color     * = tuple[r, g, b, a: cfloat]
@@ -82,7 +79,7 @@ type Node *{.pure.}= object
   childrenCount  *:cuint
   children       *:ptr UncheckedArray[ptr Node]
   meshCount      *:cuint
-  meshes         *:ptr UncheckedArray[cint]
+  meshes         *:ptr UncheckedArray[cuint]
   metaData       *:ptr Metadata
 
 
@@ -91,10 +88,10 @@ type Node *{.pure.}= object
 #_____________________________
 type Face * = object
   indexCount *:cuint
-  indices    *:ptr UncheckedArray[cint]
+  indices    *:ptr UncheckedArray[cuint]
 #_____________________________
 type VertexWeight * = object
-  vertexID     *:cint
+  vertexID     *:cuint
   weight       *:cfloat
 type Bone * = object
   name         *:String
@@ -116,7 +113,7 @@ type AnimMesh * = object
   tangents    *:UncheckedArray[ptr Vector3]                ## Replacement for aiMesh::mTangents.
   bitangents  *:UncheckedArray[ptr Vector3]                ## Replacement for aiMesh::mBitangents.
   colors      *:ptr array[0..MaxColors-1, ptr Color]       ## Replacement for aiMesh::mColors
-  texCoords   *:ptr array[0..MaxTexCoords-1, ptr Vector3]  ## Replacement for aiMesh::mTextureCoords
+  texCoords   *:ptr array[0..MaxTexCoords-1, ptr Vector2]  ## Replacement for aiMesh::mTextureCoords
   numVertices *:cuint                                      ## The number of vertices in the aiAnimMesh, and thus the length of all the member arrays. This has always the same value as the mNumVertices property in the corresponding aiMesh.
   weight      *:cfloat                                     ## Weight of the AnimMesh.
 #_____________________________
@@ -127,10 +124,10 @@ type Mesh *{.pure.}= object
   vertices        *:ptr UncheckedArray[Vector3]
   normals         *:ptr UncheckedArray[Vector3]
   tangents        *:ptr UncheckedArray[Vector3]
-  bitTangents     *:ptr UncheckedArray[Vector3]
+  bitangents      *:ptr UncheckedArray[Vector3]
   colors          *:array[0..MaxColors-1, ptr Color]
-  texCoords       *:array[0..MaxTexCoords-1, ptr Vector3]
-  numUVcomponents *:array[0..MaxTexCoords-1, cint]
+  texCoords       *:array[0..MaxTexCoords-1, ptr Vector2]
+  numUVcomponents *:array[0..MaxTexCoords-1, cuint]
   faces           *:ptr UncheckedArray[Face]
   boneCount       *:cuint
   bones           *:ptr UncheckedArray[ptr Bone]
@@ -147,11 +144,11 @@ type PropertyType *{.pure, size: sizeof(cint).} = enum
   Float = 0x1, String = 0x3, Integer = 0x4, Buffer = 0x5
 type MaterialProperty * = object
   key        *:String
-  semantic   *:cint
-  index      *:cint
-  dataLength *:cint
+  semantic   *:cuint
+  index      *:cuint
+  dataLength *:cuint
   kind       *:PropertyType
-  data       *:UncheckedArray[char]
+  data       *:UncheckedArray[cchar]
 #_____________________________
 type Material *{.pure.}= object
   properties    *:ptr UncheckedArray[ptr MaterialProperty]
@@ -178,7 +175,7 @@ type NodeAnim    *{.pure.}= object
 #_____________________________
 type MeshKey * = object
   time  *:cdouble
-  value *:cint
+  value *:cuint
 type MeshAnim *{.pure.}= object
   name     *:String
   keyCount *:cuint
@@ -212,11 +209,19 @@ type TextureType *{.pure, size: sizeof(cint).} = enum
   height, normals, shininess, opacity,
   displacement, lightmap, reflection, unknown
 #_____________________________
-type Texture    * = object
-  width         *:cint
-  height        *:cint
-  achFormatHint *:array[0..3, cchar]
-  pcData        *:ptr Texel
+type TextureFlag *{.pure, size: sizeof(cint).} = enum
+  invert       ## The texture's color values have to be inverted (component-wise 1-n)
+  useAlpha     ## Explicit request to the application to process the alpha channel of the texture.
+  ignoreAlpha  ## Explicit request to the application to ignore the alpha channel of the texture.
+type TextureFlags * = set[TextureFlag]
+#_____________________________
+const MaxTextureHintLen = 9  # #define HINTMAXTEXTURELEN 9   // 8 for string + 1 for terminator.
+#_____________________________
+type Texture * = object
+  width         *:cuint
+  height        *:cuint
+  achFormatHint *:array[0..MaxTextureHintLen-1, cchar]
+  pcData        *:ptr UncheckedArray[Texel]
 
 
 #_______________________________________
