@@ -7,7 +7,17 @@ import ./types
 #_____________________________
 # Make all functions cdecl
 {.push cdecl.}
-{.push header: "cimport.h".}
+#_____________________________
+# Library Linking
+when defined(assimpDynamic): # Link Dynamically
+  when defined(windows):
+    {.push dynlib: "Assimp(|32|64).dll".}
+  elif defined(macosx):
+    {.push dynlib: "libassimp.dylib".}
+  else:
+    {.push dynlib: "libassimp.so".}
+else:  # Link statically
+  {.push header: "cimport.h".}
 
 #_________________________________________________
 # General Purpose
@@ -75,6 +85,6 @@ proc getMaterialFloatArray *(
   ) :ReturnCode {.importc: "aiGetMaterialFloatArray".}
 
 #_____________________________
+{.pop.} # << header: "cimport.h"  or   dynlib: "LibName"
 {.pop.} # << callconv cdecl
-{.pop.} # << header: "cimport.h"
 

@@ -5,6 +5,8 @@
 --passC:"-m64"
 --passC:"-march=native"
 
+--define:assimpDynamic  # TODO: Remove. Should be linking static by default
+
 #_____________________
 # Default option to run when noOpt
 #   Condition cannot be eval at compile time, so it needs to list all options possible

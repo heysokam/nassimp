@@ -32,9 +32,9 @@ let Cdir      = srcDir/packageName/"C"
 #___________________
 task git, " Internal:  Updates the assimp submodule.":
   ## Updates the submodule, and hard reset/clean everything in the folder
+  withDir Cdir: exec "git pull"
   exec &"git submodule update --recursive {Cdir}"
   withDir Cdir:
-    exec "git pull"
     exec "git reset --hard HEAD"
     exec "git clean -fdx"
 #___________________

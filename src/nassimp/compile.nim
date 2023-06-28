@@ -65,6 +65,9 @@ static:
 #_________________________________________________
 # Static link to the Assimp.CMake resulting file
 #_____________________________
+# TODO: Properly handle clang/gcc/etc checks
+#     : clang chokes when sending -l:libname.a
+# TODO: minizip is being linked dynamically, but should be static
 {.passL: "-lstdc++ -lz -lminizip".}
 {.passC: &"-I{inclDir}".}
 {.passC: &"-I{assimpDir}".}
@@ -73,10 +76,14 @@ when defined(windows) and defined(debug):
   {.passL: "-l:libassimpd.lib".}
 elif defined(windows):
   {.passL: "-l:libassimp.lib".}
-elif defined(unix) and defined(debug):
+elif defined(linux) and defined(debug):
   {.passL: "-l:libassimpd.a".}
-elif defined(unix):
+elif defined(linux):
   {.passL: "-l:libassimp.a".}
+elif defined(macosx) and defined(debug):
+  {.passL: "-lassimpd.a".}
+elif defined(macosx):
+  {.passL: "-lassimp.a".}
 else:
   {.error: &"System {hostOS} not recognized".}
 
