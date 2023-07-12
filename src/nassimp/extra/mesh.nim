@@ -43,13 +43,15 @@ iterator inormals *(m :ptr Mesh) :ai.Vector3=
   ## Yields all vertex normals of the given mesh
   for vert in 0..<m.vertexCount: yield m.normals[vert]
 #________________________________________
-iterator iuvs *(m :ptr Mesh) :ai.Vector2=
+iterator iuvs *(m :ptr Mesh; channel :SomeInteger) :ai.Vector3=
   ## Yields all texture coordinates of the given mesh
-  for vert in 0..<m.vertexCount: yield m.texCoords[vert][]
+  for vert in 0..<m.vertexCount:
+    debugEcho m.texCoords[channel][vert]
+    yield m.texCoords[channel][vert]
 #________________________________________
-iterator icolors *(m :ptr Mesh) :ptr ai.Color=
+iterator icolors *(m :ptr Mesh; channel :SomeInteger) :ai.Color=
   ## Yields all vertex colors of the given mesh
-  for vert in 0..<m.vertexCount: yield m.colors[vert]
+  for vert in 0..<m.vertexCount: yield m.colors[channel][vert]
 #________________________________________
 iterator itangents *(m :ptr Mesh) :ai.Vector3=
   ## Yields all vertex tangents of the given mesh
@@ -85,6 +87,7 @@ func getIndices *(m :ptr Mesh) :seq[UVector3]=
   ## Returns a seq with all the indices of the given mesh.
   ## Will raise an ImportError if the mesh faces are not triangulated.
   ## TODO: non-triangulated support  (height-maps)
+  if not m.hasIndices(): return @[]
   result = newSeqOfCap[UVector3](m.faceCount)
   for face in m.ifaces:
     if face.indexCount != 3: raise newException(ImportError, &"The mesh {m.getName()} contains non-triangulated faces.")
@@ -93,27 +96,35 @@ func getIndices *(m :ptr Mesh) :seq[UVector3]=
     copyMem( result[curr].addr, face.indices[0].addr, face.indexCount.int * cuint.sizeof )
 func getPositions *(m :ptr Mesh) :seq[ex.Vector3]=
   ## Returns a seq with all the vertex positions of the given Mesh
+  if not m.hasPositions(): return @[]
   for pos in m.ivertices:  result.add pos.toVector3
-func getColors *(m :ptr Mesh) :seq[ex.Color]=
+func getColors *(m :ptr Mesh; channel :SomeInteger= 0) :seq[ex.Color]=
   ## Returns a seq with all the vertex colors of the given Mesh
-  for color in m.icolors:  result.add color[].toColor  # Dereference the iterator Color ptr, so we get a copy
-func getUVs *(m :ptr Mesh; id :SomeInteger= 0) :seq[ex.Vector2]=
+  if not m.hasColors(): return @[]
+  for color in m.icolors(channel):  result.add color.toColor
+func getUVs *(m :ptr Mesh; channel :SomeInteger= 0) :seq[ex.Vector3]=
   ## Returns a seq with all the vertex UVs of the given Mesh at UV position id
-  for uv in m.iuvs():  result.add uv.toVector2
+  if not m.hasUVs(): return @[]
+  for uv in m.iuvs(channel): result.add uv.toVector3
 func getNormals *(m :ptr Mesh) :seq[ex.Vector3]=
   ## Returns a seq with all the vertex normals of the given Mesh
+  if not m.hasNormals(): return @[]
   for norm in m.inormals:  result.add norm.toVector3
 func getTangents *(m :ptr Mesh) :seq[ex.Vector3]=
   ## Returns a seq with all the vertex tangents of the given Mesh
+  if not m.hasTangents(): return @[]
   for tan in m.itangents:  result.add tan.toVector3
 func getBitangents *(m :ptr Mesh) :seq[ex.Vector3]=
   ## Returns a seq with all the vertex bitangents of the given Mesh
+  if not m.hasBitangents(): return @[]
   for bitan in m.ibitangents:  result.add bitan .toVector3
 func getBones *(m :ptr Mesh) :seq[Bone]=
   ## Returns a seq with all bones of the given Mesh
+  if not m.hasBones(): return @[]
   for bone in m.ibones:  result.add bone[]  # Dereference the iterator Bone ptr, so we get a copy
 func getAnimMeshes *(m :ptr Mesh) :seq[ptr AnimMesh]=
   ## Returns a seq with all animation meshes of the given Mesh
+  if not m.hasAnimMeshes(): return @[]
   # for mesh in m.ianimMeshes:  result.add mesh[]  # Dereference the iterator AnimMesh ptr, so we get a copy
   for id in 0..<m.animMeshCount: result.add m.animMeshes[id] # Dereference the AnimMesh ptr, so we get a copy
 

@@ -42,7 +42,7 @@ type MeshData * = ref object
   inds        *:seq[UVector3]     ## Face indices
   pos         *:seq[Vector3]      ## Vertex Positions
   colors      *:seq[Color]        ## Vertex colors
-  uvs         *:seq[Vector2]      ## Texture coordinates
+  uvs         *:seq[Vector3]      ## Texture coordinates
   norms       *:seq[Vector3]      ## Normal vectors
   tans        *:seq[Vector3]      ## Tangents
   bitans      *:seq[Vector3]      ## Bitangents

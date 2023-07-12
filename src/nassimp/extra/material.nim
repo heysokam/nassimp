@@ -2,6 +2,7 @@
 #  nassimp  |  Copyright (C) Ivan Mar (sOkam!)  |  BSD-3-Clause  |
 #:________________________________________________________________
 # std dependencies
+import std/strformat
 import std/strutils
 # nassimp dependencies
 import ../types as ai
@@ -32,8 +33,8 @@ func getPath *(mat :ptr Material; typ :TextureType; id :Someinteger= 0) :string=
   ## Returns the file path of the given texture (typ,id) contained in the given Material
   var path :String
   case mat.getTexture(typ, id.cuint, path = path.addr, nil, nil, nil, nil, nil)
-  of   ReturnCode.outOfMemory: raise newException(ImportError, "Tried to get Texture.{typ}.{id} from material {mat.getMatID()}, but Assimp is OutOfMemory.")
-  of   ReturnCode.failure:     raise newException(ImportError, "Tried to get Texture.{typ}.{id} from material {mat.getMatID()}, but the operation failed.")
+  of   ReturnCode.outOfMemory: raise newException(ImportError, &"Tried to get Texture.{typ}.{id} from material {mat.getMatID()}, but Assimp is OutOfMemory.")
+  of   ReturnCode.failure:     raise newException(ImportError, &"Tried to get Texture.{typ}.{id} from material {mat.getMatID()}, but the operation failed.")
   of   ReturnCode.success:     result = path.toString
 #______________________________
 func getDiffusePath      *(mat :ptr Material; texId :int= 0) :string {.inline.}=  mat.getPath(TextureType.diffuse, texId)
@@ -84,9 +85,10 @@ func getData *(mat :ptr Material; id :Someinteger; scene :ptr Scene) :MaterialDa
   new result
   result.id = id
   for typ in TextureType:
-    if not mat.has(typ): continue            # Skip adding this type of texture if the material doesn't have any
-    for id in 0..<mat.getTextureCount(typ):  # Create a sequence with all textures contained in the material
-      result.tex[typ].add mat.getTexture(typ, id, scene)
+    if not mat.has(typ): continue             # Skip adding this type of texture if the material doesn't have any
+    echo mat.getMatID()," : ", typ, " -> ",mat.has(typ)
+    for tex in 0..<mat.getTextureCount(typ):  # Create a sequence with all textures contained in the material
+      result.tex[typ].add mat.getTexture(typ, tex, scene)
 
 
 

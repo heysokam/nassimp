@@ -51,8 +51,8 @@ proc getScene *(input :string; flags = ProcessFlags.default()) :ptr Scene=
   if input.fileExists(): result = input.importFile(flags)
   else:                  result = input.importMem(input.len, flags, hint=nil)
 #_____________________________
-proc load *(input :string;
-    _:typedesc[ModelData];
+proc load *(_:typedesc[ModelData];
+    input : string;
     flags = ProcessFlags.default();
   ) :ModelData=
   ## Loads a Model from the given input filepath or bytebuffer.
@@ -70,8 +70,8 @@ proc load *(input :string;
   # Release the data when done
   ai.release(scn)
 #_____________________________
-proc load *(input :string;
-    _:typedesc[SceneData];
+proc load *(_:typedesc[SceneData];
+    input : string;
     flags = ProcessFlags.default();
   ) :SceneData=
   ## Loads the scene contained in the given input filepath or bytebuffer.

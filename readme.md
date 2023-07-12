@@ -24,8 +24,8 @@ nim    : To use the library
 # Smart load from a string  ( Nim extension )
 import nassimp as ai
 let input = "......"               # Can contain a bytebuffer or a filepath
-let scene = input.load(SceneData)  # Treats the input as a Scene, with Models, Lights, Cameras, etc
-let model = input.load(ModelData)  # Treats the input as a single Model
+let scene = SceneData.load(input)  # Loads the input as a Scene, with Models, Lights, Cameras, etc
+let model = ModelData.load(input)  # Loads the input as a single Model
 ```
 
 ```nim

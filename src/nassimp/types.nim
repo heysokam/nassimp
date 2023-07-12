@@ -65,8 +65,8 @@ type MetadataEntry * = object
 #_____________________________
 type Metadata * = object
   numProperties  *:cuint                          ## Length of the mKeys and mValues arrays, respectively
-  keys           *:UncheckedArray[String]         ## Arrays of keys, may not be NULL. Entries in this array may not be NULL as well.
-  values         *:UncheckedArray[MetadataEntry]  ## Arrays of values, may not be NULL. Entries in this array may be NULL if the corresponding property key has no assigned value.
+  keys           *:ptr UncheckedArray[String]         ## Arrays of keys, may not be NULL. Entries in this array may not be NULL as well.
+  values         *:ptr UncheckedArray[MetadataEntry]  ## Arrays of values, may not be NULL. Entries in this array may be NULL if the corresponding property key has no assigned value.
 
 
 #_______________________________________
@@ -107,15 +107,15 @@ type PrimitiveType *{.pure, size: sizeof(cint).} = enum
 type PrimitiveTypes * = set[PrimitiveType]
 #_____________________________
 type AnimMesh * = object
-  name        *:String                                     ## Anim Mesh name
-  vertices    *:UncheckedArray[ptr Vector3]                ## Replacement for aiMesh::mVertices.
-  normals     *:UncheckedArray[ptr Vector3]                ## Replacement for aiMesh::mNormals.
-  tangents    *:UncheckedArray[ptr Vector3]                ## Replacement for aiMesh::mTangents.
-  bitangents  *:UncheckedArray[ptr Vector3]                ## Replacement for aiMesh::mBitangents.
-  colors      *:ptr array[0..MaxColors-1, ptr Color]       ## Replacement for aiMesh::mColors
-  texCoords   *:ptr array[0..MaxTexCoords-1, ptr Vector2]  ## Replacement for aiMesh::mTextureCoords
-  numVertices *:cuint                                      ## The number of vertices in the aiAnimMesh, and thus the length of all the member arrays. This has always the same value as the mNumVertices property in the corresponding aiMesh.
-  weight      *:cfloat                                     ## Weight of the AnimMesh.
+  name        *:String                                                    ## Anim Mesh name
+  vertices    *:ptr UncheckedArray[ptr Vector3]                           ## Replacement for aiMesh::mVertices.
+  normals     *:ptr UncheckedArray[ptr Vector3]                           ## Replacement for aiMesh::mNormals.
+  tangents    *:ptr UncheckedArray[ptr Vector3]                           ## Replacement for aiMesh::mTangents.
+  bitangents  *:ptr UncheckedArray[ptr Vector3]                           ## Replacement for aiMesh::mBitangents.
+  colors      *:ptr array[0..MaxColors-1, ptr UncheckedArray[Color]]      ## Replacement for aiMesh::mColors
+  texCoords   *:ptr array[0..MaxTexCoords-1, ptr UncheckedArray[Vector3]] ## Replacement for aiMesh::mTextureCoords
+  numVertices *:cuint                                                     ## The number of vertices in the aiAnimMesh, and thus the length of all the member arrays. This has always the same value as the mNumVertices property in the corresponding aiMesh.
+  weight      *:cfloat                                                    ## Weight of the AnimMesh.
 #_____________________________
 type Mesh *{.pure.}= object
   primitiveTypes  *:PrimitiveTypes
@@ -125,8 +125,8 @@ type Mesh *{.pure.}= object
   normals         *:ptr UncheckedArray[Vector3]
   tangents        *:ptr UncheckedArray[Vector3]
   bitangents      *:ptr UncheckedArray[Vector3]
-  colors          *:array[0..MaxColors-1, ptr Color]
-  texCoords       *:array[0..MaxTexCoords-1, ptr Vector2]
+  colors          *:array[0..MaxColors-1, ptr UncheckedArray[Color]]
+  texCoords       *:array[0..MaxTexCoords-1, ptr UncheckedArray[Vector3]]
   numUVcomponents *:array[0..MaxTexCoords-1, cuint]
   faces           *:ptr UncheckedArray[Face]
   boneCount       *:cuint
@@ -148,7 +148,7 @@ type MaterialProperty * = object
   index      *:cuint
   dataLength *:cuint
   kind       *:PropertyType
-  data       *:UncheckedArray[cchar]
+  data       *:ptr UncheckedArray[cchar]
 #_____________________________
 type Material *{.pure.}= object
   properties    *:ptr UncheckedArray[ptr MaterialProperty]
@@ -165,11 +165,11 @@ type AnimBehavior *{.pure, size: sizeof(cint).} = enum
 type NodeAnim    *{.pure.}= object
   nodeName         *:String
   positionKeyCount *:cuint
-  positionKeys     *:UncheckedArray[VectorKey]
+  positionKeys     *:ptr UncheckedArray[VectorKey]
   rotationKeyCount *:cuint
-  rotationKeys     *:UncheckedArray[QuatKey]
+  rotationKeys     *:ptr UncheckedArray[QuatKey]
   scalingKeyCount  *:cuint
-  scalingKeys      *:UncheckedArray[VectorKey]
+  scalingKeys      *:ptr UncheckedArray[VectorKey]
   preState         *:AnimBehavior
   posState         *:AnimBehavior
 #_____________________________
@@ -179,7 +179,7 @@ type MeshKey * = object
 type MeshAnim *{.pure.}= object
   name     *:String
   keyCount *:cuint
-  keys     *:UncheckedArray[MeshKey]
+  keys     *:ptr UncheckedArray[MeshKey]
 #_____________________________
 type Animation    *{.pure.}= object
   name             *:String
